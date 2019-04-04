@@ -11,4 +11,4 @@ source=$1
 payload=$(mktemp pr-diff-resource-request.XXXXXX)
 cat > $payload <&0
 
-node ./lib/main/check.js
+node ./lib/main/check.js $source $payload
