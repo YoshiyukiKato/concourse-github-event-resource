@@ -1,8 +1,8 @@
-const {parseInput} = require("../io/input-parser");
-const {writeResult} = require("../io/result-writer");
+const {parseArgs} = require("../io/input");
+const {writeResult, writeLog} = require("../io/output");
 
-const {source, payload} = parseInput();
+const {source, payload} = parseArgs();
 
-console.log("source & payload", source, payload);
+writeLog(source);
 
 writeResult({ ref : "none" });

@@ -1,13 +1,12 @@
 const fs = require("fs");
+const RESULT_FILE_PATH = process.env.RESULT_FILE_PATH;
 
 exports.writeResult = (json) => {
-  const writer = fs.createWriteStream(null, { fd: 3 });
-  writer.write(JSON.stringify(json));
-  writer.close();
+  const result = JSON.stringify(json);
+  fs.writeFileSync(RESULT_FILE_PATH, result);
 }
 
 exports.writeLog = (...args) => {
-  const writer = fs.createWriteStream(null, { fd: 1 });
-  writer.write(args.map(JSON.stringify).join(" "));
-  writer.close();
+  const log = args.map(JSON.stringify).join(" ");
+  fs.writeSync(2, log + "\n");
 }
