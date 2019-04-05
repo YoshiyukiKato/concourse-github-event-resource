@@ -1,0 +1,29 @@
+{
+  "name": "concourse-github-event-resource",
+  "version": "1.0.0",
+  "description": "A concourse resource to handle github events with webhook.",
+  "main": "index.js",
+  "scripts": {
+    "check": "node ./lib/cmd/check.js",
+    "in": "node ./lib/cmd/in.js",
+    "out": "node ./lib/cmd/out.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YoshiyukiKato/concourse-github-event-resource.git"
+  },
+  "keywords": [
+    "concourse",
+    "github"
+  ],
+  "author": "Yoshiyuki Kato",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/YoshiyukiKato/concourse-github-event-resource/issues"
+  },
+  "homepage": "https://github.com/YoshiyukiKato/concourse-github-event-resource#readme",
+  "dependencies": {
+    "@octokit/rest": "^16.23.2",
+    "glob-to-regexp": "^0.4.1"
+  }
+}

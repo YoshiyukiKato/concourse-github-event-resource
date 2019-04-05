@@ -10,5 +10,7 @@ exec 1>&2 # redirect all output to stderr for logging
 source=$1
 payload=$(mktemp github-event-resource-request.XXXXXX)
 cat > $payload <&0
+payload_body=$(cat $payload)
 
-node /opt/resource/lib/cmd/in.js $source $(cat $payload)
+cd /opt/resource
+npm run in $payload_body $source 

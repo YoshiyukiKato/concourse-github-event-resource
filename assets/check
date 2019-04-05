@@ -3,12 +3,20 @@
 set -e
 set -o pipefail
 
-exec 3>&1 # make stdout available as fd 3 for the result
-exec 1>&2 # redirect all output to stderr for logging
+exec 3>&1
+exec 1>&2
 
 # Read inputs
-source=$1
 payload=$(mktemp github-event-resource-request.XXXXXX)
 cat > $payload <&0
+payload_body=$(cat $payload)
 
-node /opt/resource/lib/cmd/check.js $source $(cat $payload)
+resource=/opt/resource
+cd $resource
+
+result=$(mktemp github-event-resource-result.XXXXXX)
+export RESULT_FILE_PATH=$resource/$result
+
+npm cache clean --force
+npm run check $payload_body
+echo $(cat $RESULT_FILE_PATH) >&3
