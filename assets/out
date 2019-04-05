@@ -11,4 +11,4 @@ source=$1
 payload=$(mktemp github-event-resource-request.XXXXXX)
 cat > $payload <&0
 
-node /opt/resource/lib/main/out.js $source $(cat $payload)
+node /opt/resource/lib/cmd/out.js $source $(cat $payload)
