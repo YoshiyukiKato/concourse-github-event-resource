@@ -8,7 +8,7 @@ exec 1>&2 # redirect all output to stderr for logging
 
 # Read inputs
 source=$1
-payload=$(mktemp pr-diff-resource-request.XXXXXX)
+payload=$(mktemp github-event-resource-request.XXXXXX)
 cat > $payload <&0
 
-node ./lib/main/in.js $source $payload
+node /opt/resource/lib/main/in.js $source $(cat $payload)
