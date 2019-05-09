@@ -1,7 +1,7 @@
 const Octokit = require("@octokit/rest");
 const { parseArgs } = require("../io/input");
 const { writeLog, writeResult } = require("../io/output");
-const { isEventMatched } = require("../github/event");
+const { getTargetEvents, getEventsRefs } = require("../github/event");
 
 const { payload } = parseArgs();
 
@@ -14,11 +14,16 @@ const { payload } = parseArgs();
     owner: payload.source.repository.owner,
     repo: payload.source.repository.name
   });
-  const matchedEvents = events.filter(
-    isEventMatched.bind(null, payload.source.event)
+
+  const targetEvents = getTargetEvents(
+    payload.source.event,
+    payload.version.ref,
+    events
   );
-  if (matchedEvents.length > 0) {
-    writeResult(matchedEvents);
+  const eventRefs = getEventRefs(targetEvents);
+
+  if (targetEvents.length > 0) {
+    writeResult(eventRefs);
   } else {
     writeResult([{ ref: "none" }]);
   }

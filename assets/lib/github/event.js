@@ -1,11 +1,27 @@
 const globToRegExp = require("glob-to-regexp");
 
-exports.isEventMatched = function(targetEvent, event) {
+function isEventMatched(targetEvent, event) {
   return (
     targetEvent.type === event.type &&
     eventMatcher[targetEvent.type] &&
     eventMatcher[targetEvent.type](targetEvent, event)
   );
+}
+
+exports.getTargetEvents = function(targetEvent, lastEventRef, events) {
+  const matchedEvents = events.filter(isEventMatched.bind(null, targetEvent));
+
+  const lastRefIndex = matchedEvents.findIndex(
+    event => event.id === lastEventRef
+  );
+
+  return lastRefIndex > 0 ? matchedEvents.slice(lastRefIndex) : matchedEvents;
+};
+
+exports.getEventRefs = function(events) {
+  return events.map(({ id }) => {
+    return { ref: id };
+  });
 };
 
 const eventMatcher = {

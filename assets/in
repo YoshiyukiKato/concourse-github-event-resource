@@ -13,4 +13,9 @@ cat > $payload <&0
 payload_body=$(cat $payload)
 
 cd /opt/resource
-npm run in $payload_body $source 
+result=$(mktemp github-event-resource-result.XXXXXX)
+export RESULT_FILE_PATH=$source/$result
+
+npm cache clean --force
+npm run in $payload_body $source
+echo $(cat $RESULT_FILE_PATH) >&3
