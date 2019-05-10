@@ -33,7 +33,7 @@ resource:
 |repository.owner|yes||github repository owner name|
 |respoitory.name|yes||github repository name|
 |api_base_url|no|https://api.github.com|github api endpoint url|
-|access_tokan|no||github personal access token. Required if your repository is private|
+|access_token|no||github personal access token. Required if your repository is private|
 
 
 ## `in`
