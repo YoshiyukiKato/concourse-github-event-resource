@@ -13,17 +13,17 @@ const github = new GithubEventClient(
     payload.source.repository.owner,
     payload.source.repository.name,
     payload.source.event,
-    payload.version.ref
+    payload.version ? payload.version.ref : null
   );
   const eventRefs = github.extractRefsFromEvents(events);
 
   if (events.length > 0) {
     writeResult(eventRefs);
   } else {
-    writeResult([{ ref: "none" }]);
+    writeResult([]);
   }
   process.exit(0);
 })().catch(err => {
-  writeLog(err);
+  writeLog(err.message);
   process.exit(1);
 });
