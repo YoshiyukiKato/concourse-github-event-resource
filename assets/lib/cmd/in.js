@@ -1,29 +1,27 @@
-const Octokit = require("@octokit/rest");
 const path = require("path");
+const GithubEventClient = require("../github/event");
 const { parseArgs } = require("../io/input");
 const { writeResult, writeJsonFile, writeLog } = require("../io/output");
-const { getTargetEvents, getEventRefs } = require("../github/event");
+
 const { source, payload } = parseArgs();
 const EVENTS_JSON_PATH = path.resolve(source, "events.json");
+const github = new GithubEventClient(
+  payload.source.api_base_url,
+  payload.source.access_token
+);
 
 (async () => {
-  const octokit = new Octokit({
-    auth: "token " + payload.source.access_token,
-    baseUrl: payload.source.api_base_url
-  });
-  const { data: events } = await octokit.activity.listRepoEvents({
-    owner: payload.source.repository.owner,
-    repo: payload.source.repository.name
-  });
-  const targetEvents = getTargetEvents(
+  const events = await github.getRepoEvents(
+    payload.source.repository.owner,
+    payload.source.repository.name,
     payload.source.event,
-    payload.version.ref,
-    events
+    payload.version.ref
   );
 
-  if (targetEvents.length > 0) {
-    const latestEventRef = getEventRefs(targetEvents)[0];
-    writeJsonFile(EVENTS_JSON_PATH, { events: targetEvents });
+  if (events.length > 0) {
+    const eventRefs = github.extractRefsFromEvents(events);
+    const latestEventRef = eventRefs[0];
+    writeJsonFile(EVENTS_JSON_PATH, { events: events });
     writeResult({
       version: latestEventRef,
       metadata: [{ name: "EventType", value: payload.source.event.type }]

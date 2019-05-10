@@ -1,28 +1,23 @@
-const Octokit = require("@octokit/rest");
+const GithubEventClient = require("../github/event");
 const { parseArgs } = require("../io/input");
 const { writeLog, writeResult } = require("../io/output");
-const { getTargetEvents, getEventsRefs } = require("../github/event");
 
 const { payload } = parseArgs();
+const github = new GithubEventClient(
+  payload.source.api_base_url,
+  payload.source.access_token
+);
 
 (async () => {
-  const octokit = new Octokit({
-    auth: "token " + payload.source.access_token,
-    baseUrl: payload.source.api_base_url
-  });
-  const { data: events } = await octokit.activity.listRepoEvents({
-    owner: payload.source.repository.owner,
-    repo: payload.source.repository.name
-  });
-
-  const targetEvents = getTargetEvents(
+  const events = await github.getRepoEvents(
+    payload.source.repository.owner,
+    payload.source.repository.name,
     payload.source.event,
-    payload.version.ref,
-    events
+    payload.version.ref
   );
-  const eventRefs = getEventRefs(targetEvents);
+  const eventRefs = github.extractRefsFromEvents(events);
 
-  if (targetEvents.length > 0) {
+  if (events.length > 0) {
     writeResult(eventRefs);
   } else {
     writeResult([{ ref: "none" }]);

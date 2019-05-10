@@ -17,5 +17,5 @@ result=$(mktemp github-event-resource-result.XXXXXX)
 export RESULT_FILE_PATH=$source/$result
 
 npm cache clean --force
-npm run in $payload_body $source
+npm run --silent in $payload_body $source
 echo $(cat $RESULT_FILE_PATH) >&3

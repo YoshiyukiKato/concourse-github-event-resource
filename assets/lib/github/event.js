@@ -1,3 +1,4 @@
+const Octokit = require("@octokit/rest");
 const globToRegExp = require("glob-to-regexp");
 
 function isEventMatched(targetEvent, event) {
@@ -8,21 +9,32 @@ function isEventMatched(targetEvent, event) {
   );
 }
 
-exports.getTargetEvents = function(targetEvent, lastEventRef, events) {
-  const matchedEvents = events.filter(isEventMatched.bind(null, targetEvent));
+class GitHubEventClient {
+  constructor(apiBaseUrl, accessToken) {
+    this.octokit = new Octokit({
+      auth: "token " + accessToken,
+      baseUrl: apiBaseUrl || "https://api.github.com"
+    });
+  }
 
-  const lastRefIndex = matchedEvents.findIndex(
-    event => event.id === lastEventRef
-  );
+  async getRepoEvents(owner, name, targetEvent, lastEventRef) {
+    const { data: events } = await this.octokit.activity.listRepoEvents({
+      owner: owner,
+      repo: name
+    });
+    const matchedEvents = events.filter(isEventMatched.bind(null, targetEvent));
+    const lastRefIndex = matchedEvents.findIndex(
+      event => event.id === lastEventRef
+    );
+    return lastRefIndex > 0 ? matchedEvents.slice(lastRefIndex) : matchedEvents;
+  }
 
-  return lastRefIndex > 0 ? matchedEvents.slice(lastRefIndex) : matchedEvents;
-};
-
-exports.getEventRefs = function(events) {
-  return events.map(({ id }) => {
-    return { ref: id };
-  });
-};
+  extractRefsFromEvents(events) {
+    return events.map(({ id }) => {
+      return { ref: id };
+    });
+  }
+}
 
 const eventMatcher = {
   CreateEvent: (
@@ -39,3 +51,5 @@ const eventMatcher = {
     return targetRefType === refType && globToRegExp(targetRef).test(ref);
   }
 };
+
+module.exports = GitHubEventClient;
